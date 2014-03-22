@@ -274,8 +274,8 @@ static boot_state_t bs_payload_load(void *arg)
 
 	entry = selfload(get_lb_mem(), payload);
 
-	if (! entry)
-		die("Could not load payload\n");
+	//if (! entry)
+	//	die("Could not load payload\n");
 
 	/* Pass the payload to the next state. */
 	boot_states[BS_PAYLOAD_BOOT].arg = entry;

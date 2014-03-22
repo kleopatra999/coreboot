@@ -12,17 +12,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+#include <types.h>
+#include <armv7.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <arch/stages.h>
+#include <cbmem.h>
+#include <timestamp.h>
+#include <arch/cache.h>
+#include <arch/exception.h>
+
 
 void main(void)
 {
         void *entry;
 
 	console_init();
-
+	cbmem_initialize_empty();
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 
 	stage_exit(entry);
