@@ -208,7 +208,8 @@ INCLUDES += -Isrc/device/oprom/include
 # abspath is a workaround for romcc
 INCLUDES += -include $(src)/include/kconfig.h
 
-CFLAGS = $(INCLUDES) -Os -pipe -g -nostdinc
+#CFLAGS = $(INCLUDES) -Os -pipe -g -nostdinc
+CFLAGS = $(INCLUDES) -pipe -g -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Wshadow

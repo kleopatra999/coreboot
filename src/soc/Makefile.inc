@@ -4,3 +4,4 @@
 subdirs-y += intel
 subdirs-y += nvidia
 subdirs-y += samsung
+subdirs-y += rockchip

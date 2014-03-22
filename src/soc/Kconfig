@@ -4,4 +4,5 @@ endif
 if ARCH_ARM
 source src/soc/nvidia/Kconfig
 source src/soc/samsung/Kconfig
+source src/soc/rockchip/Kconfig
 endif

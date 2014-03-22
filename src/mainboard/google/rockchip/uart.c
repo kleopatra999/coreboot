@@ -1,0 +1,115 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2013 Google, Inc.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <console/console.h>
+#include <uart.h>
+#include "uart.h"
+#include "Reg.h"
+#include "Memap.h"
+
+#define g_3188_grfReg ((pRK3066B_GRF_REG)GRF_BASE)
+#define UART2_BASE_ADDR            0xFF690000
+pUART_REG pUartReg = (pUART_REG)UART2_BASE_ADDR;
+#define ReadReg32(addr)                     (*(volatile u32 *)(addr))
+#define WriteReg32(addr, data)              (*(volatile u32 *)(addr) = data)
+
+#define VEXPRESS_UART0_IO_ADDRESS	(0x10009000)
+
+static void pl011_init_dev(void) {
+    u32  uartTemp;
+    //u32 lcr;
+    //volatile u32 *pRegAddr;
+    //clk
+    //pRegAddr = (volatile u32*)0x1801801C;
+    //*pRegAddr &= ~(0x03<<18);	//open uart 0 and 1 clk
+
+    g_3188_grfReg->GRF_GPIO_IOMUX[1].GPIOB_IOMUX = (((0x3<<2)|(0x3))<<16)|(0x1<<2)|(0x1);   // sin,sout uart2
+
+   
+    //iomux
+    //pRegAddr = (volatile u32*)0x18019020;
+    //*pRegAddr &= ~0xf00f000;	//open uart 0 and 1 iomux
+    //*pRegAddr |= 0x5005000;    
+  
+    //Reset
+    pUartReg->UART_SRR = UART_RESET | RCVR_FIFO_REST | XMIT_FIFO_RESET;
+    pUartReg->UART_IER = 0;
+    
+    //uart mode
+    pUartReg->UART_MCR = IRDA_SIR_DISABLED;
+
+    //BaudRate
+    pUartReg->UART_LCR = LCR_DLA_EN | PARITY_DISABLED | ONE_STOP_BIT | LCR_WLS_8;
+    uartTemp = (1000 * 24000) / MODE_X_DIV / 115200;
+
+    pUartReg->UART_DLL = uartTemp & 0xff;
+    pUartReg->UART_DLH = (uartTemp>>8) & 0xff;
+    pUartReg->UART_LCR = PARITY_DISABLED | ONE_STOP_BIT | LCR_WLS_8;
+
+    pUartReg->UART_SFE = SHADOW_FIFI_ENABLED;
+    pUartReg->UART_SRT = RCVR_TRIGGER_TWO_LESS_FIFO;
+    pUartReg->UART_STET = TX_TRIGGER_TWO_IN_FIFO;
+}
+
+static void pl011_uart_tx_byte(unsigned char data) {
+    u32 uartTimeOut;
+    pUART_REG puartRegStart;  
+
+    if(!pUartReg) return;
+    
+    puartRegStart = (pUART_REG)pUartReg;
+    
+    uartTimeOut = 0xFFFF;
+    while((puartRegStart->UART_USR & UART_TRANSMIT_FIFO_NOT_FULL) != UART_TRANSMIT_FIFO_NOT_FULL)
+    {
+        if(uartTimeOut == 0)
+        {
+            return ;
+        }
+        uartTimeOut--;
+    }
+    puartRegStart->UART_THR = data;
+}
+
+static void pl011_uart_tx_flush(void) {
+}
+
+#if !defined(__PRE_RAM__)
+
+static const struct console_driver pl011_uart_console __console = {
+	.init     = pl011_init_dev,
+	.tx_byte  = pl011_uart_tx_byte,
+	.tx_flush = pl011_uart_tx_flush,
+};
+
+u32 uartmem_getbaseaddr(void)
+{
+	return VEXPRESS_UART0_IO_ADDRESS;
+}
+#else
+void uart_init(void)
+{
+	pl011_init_dev();
+}
+
+void uart_tx_byte(unsigned char data)
+{
+	pl011_uart_tx_byte(data);
+}
+
+void uart_tx_flush(void) {
+	pl011_uart_tx_flush();
+}
+#endif
