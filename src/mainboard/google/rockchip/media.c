@@ -16,6 +16,7 @@
 #include <string.h>
 #include <console/console.h>
 
+#include "mmc.c"
 /* Simple memory-mapped ROM emulation. */
 
 static int emu_rom_open(struct cbfs_media *media)
@@ -61,5 +62,23 @@ int init_emu_rom_cbfs_media(struct cbfs_media *media)
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
+	/************************************/
+	// for test and no compile warning here.
+	char buf[1024];
+	if(0){
+		buf[0] = 0x12;
+		buf[1] = 0x34;
+		buf[2] = 0x56;
+		buf[3] = 0x78;
+		EmmcWrite(buf, 0x400000, 512);
+		buf[0] = 0x00;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		EmmcRead(buf, 0x400000, 1024);
+		printk(BIOS_INFO, "0x%x 0x%x 0x%x 0x%x\n", buf[0], buf[1], buf[2], buf[3]);
+	}
+	/************************************/
+
 	return init_emu_rom_cbfs_media(media);
 }
