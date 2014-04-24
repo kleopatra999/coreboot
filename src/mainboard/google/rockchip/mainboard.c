@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <device/device.h>
 
-#include "i2c.h"
+
 
 static void mainboard_init(device_t dev)
 {
