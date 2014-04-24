@@ -15,7 +15,7 @@
 #include <cbfs.h>
 #include <string.h>
 #include <console/console.h>
-#include "mmc.h"
+
 
 //#include "mmc.c"
 /* Simple memory-mapped ROM emulation. */

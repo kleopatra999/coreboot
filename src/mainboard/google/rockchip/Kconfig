@@ -57,7 +57,7 @@ config SYS_SDRAM_BASE
 
 config DRAM_SIZE_MB
 	int
-	default 1024
+	default 2048
 
 # Memory map for qemu vexpress-a9:
 #
@@ -72,11 +72,11 @@ config DRAM_SIZE_MB
 #
 config STACK_TOP
 	hex
-	default 0x00200000
+	default 0x1200000
 
 config STACK_BOTTOM
 	hex
-	default 0x0017FF00
+	default 0x117FF00
 
 config BOOTBLOCK_BASE
 	hex

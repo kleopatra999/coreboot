@@ -40,7 +40,6 @@ Notes :
 #define CRU_BASE_ADDR		0xFF760000
 #define GRF_BASE                0xff770000
 #define GRF_SECURE_BASE         0xff740000
-//#define REG_FILE_BASE_ADDR      GRF_BASE
 #define GPIO0_BASE_ADDR         0xFF750000
 #define GPIO1_BASE_ADDR         0xFF780000
 #define GPIO2_BASE_ADDR         0xFF790000

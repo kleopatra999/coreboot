@@ -35,6 +35,8 @@ libc-$(CONFIG_LP_SPEAKER) += speaker.c
 
 libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial.c
 
+libc-$(CONFIG_LP_RK_SERIAL_CONSOLE) += rk_serial.c
+
 libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 
 libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c

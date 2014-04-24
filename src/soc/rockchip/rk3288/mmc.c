@@ -93,6 +93,7 @@ static int EmmcPreTransfer (unsigned int Blocks)
 
 static int EmmcWriteData (void *Buffer, unsigned int Blocks)
 {
+#if 0
   unsigned int *DataBuffer = Buffer;
   unsigned int Count=0;
   unsigned int Size32 = Blocks * BLKSZ/4;
@@ -101,6 +102,43 @@ static int EmmcWriteData (void *Buffer, unsigned int Blocks)
     Writel((gMmcBaseAddr + MMC_DATA), *DataBuffer++);
 
   return 0;
+#else
+   int Status;
+  unsigned int *DataBuffer = Buffer;
+  unsigned int FifoCount=0;
+  unsigned int Count=0;
+  unsigned int Size32 = Blocks * BLKSZ / 4;
+
+  while(Size32){
+      FifoCount = FIFO_DETH - MMC_GET_FCNT(Readl(gMmcBaseAddr + MMC_STATUS));
+      for (Count = 0; Count < FifoCount; Count++)
+    	Writel((gMmcBaseAddr + MMC_DATA), *DataBuffer++);
+      Size32 -= FifoCount;
+
+    if(Readl(gMmcBaseAddr + MMC_RINTSTS) & MMC_DATA_ERROR_FLAGS) {
+      emmc_err("Emmc::ReadSingleBlock data error, RINTSTS: 0x%08x\n",
+			    (Readl(gMmcBaseAddr + MMC_RINTSTS)));
+      Writel(gMmcBaseAddr + MMC_RINTSTS, MMC_DATA_ERROR_FLAGS);
+      return -1;
+    }
+
+    if(Readl(gMmcBaseAddr + MMC_RINTSTS) & MMC_INT_TXDR) {
+      Writel(gMmcBaseAddr + MMC_RINTSTS, MMC_INT_TXDR);
+      continue;
+    }
+    if(Readl(gMmcBaseAddr + MMC_RINTSTS) & MMC_INT_DATA_OVER) {
+      Writel(gMmcBaseAddr + MMC_RINTSTS, MMC_INT_DATA_OVER);
+      break;
+    }
+  }
+  if(Size32 == 0)
+    Status = 0;
+  else
+    Status = -1;
+
+  return Status;
+
+#endif
 }
 
 static int EmmcReadData (void *Buffer, unsigned int Blocks)
