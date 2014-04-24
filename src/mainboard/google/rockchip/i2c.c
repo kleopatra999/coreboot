@@ -197,6 +197,7 @@ RK3288I2cRead (
     Writel(BaseAddr + I2C_MRXCNT_OFF, BytesToBeTranfered);
     Writel(BaseAddr + I2C_IEN_OFF, I2C_MBRFIPD | I2C_NAKRCVIEN);
   
+		TimeOut = I2C_TIMEOUT_US;
     while(TimeOut--){
       if(Readl(BaseAddr + I2C_IPD_OFF) & I2C_NAKRCVIPD){
         Writel(BaseAddr + I2C_IPD_OFF, I2C_NAKRCVIPD);
@@ -301,6 +302,7 @@ RK3288I2cWrite (
     Writel(BaseAddr + I2C_MTXCNT_OFF, BytesToBeTranfered);
     Writel(BaseAddr + I2C_IEN_OFF, I2C_MBTFIPD | I2C_NAKRCVIEN);
 
+		TimeOut = I2C_TIMEOUT_US;
     while(TimeOut--){
       if(Readl(BaseAddr + I2C_IPD_OFF) & I2C_NAKRCVIPD){
         Writel(BaseAddr + I2C_IPD_OFF, I2C_NAKRCVIPD);
