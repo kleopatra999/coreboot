@@ -168,6 +168,11 @@ RK3288I2cRead (
   if(buf == NULL)
       return 1;
 
+  // send start bit
+  Status = RK3288I2cSendStartBit(BaseAddr);
+	if(Status != 0)
+		return Status != 0;
+
   Writel(BaseAddr + I2C_MRXADDR_OFF, I2C_MRXADDR(1, chip << 1 | 1));
   if(alen == 0)
     Writel(BaseAddr +  I2C_MRXRADDR_OFF, 0);
@@ -261,6 +266,11 @@ RK3288I2cWrite (
   if(buf == NULL)
       return 1;
 
+  // send start bit
+  Status = RK3288I2cSendStartBit(BaseAddr);
+	if(Status != 0)
+		return Status != 0;
+
   while(BytesRemainingToBeTransfered){
     if(BytesRemainingToBeTransfered > 32)
       BytesToBeTranfered = 32;
@@ -348,11 +358,6 @@ int i2c_read(
   // clean all ipd
   Writel(BaseAddr + I2C_IPD_OFF, I2C_CLEAN_IPDS);
 
-  // send start bit
-  Status = RK3288I2cSendStartBit(BaseAddr);
-	if(Status != 0)
-		return Status != 0;
-
   while(RetryCount++ < RETRY_COUNT){
     Status = RK3288I2cRead(BaseAddr, chip, addr, alen, buf, len, RetryCount);
     if(Status != I2C_NOACK)
@@ -385,11 +390,6 @@ int i2c_write(
   // clean all ipd
   Writel(BaseAddr + I2C_IPD_OFF, I2C_CLEAN_IPDS);
 
-  // send start bit
-  Status = RK3288I2cSendStartBit(BaseAddr);
-	if(Status != 0)
-		return Status != 0;
-
   while(RetryCount++ < RETRY_COUNT){
     Status = RK3288I2cWrite(BaseAddr, chip, addr, alen, buf, len, RetryCount);
     if(Status != I2C_NOACK)
@@ -401,6 +401,7 @@ int i2c_write(
 
 static void i2c_test(unsigned bus)
 {
+#if 0
   uint8_t buf[2];
   
 	buf[0] = 0x35;
@@ -413,6 +414,7 @@ static void i2c_test(unsigned bus)
 	buf[0] = 0x00;
   i2c_read(bus, 0x6b, 0x00, 1, buf, 1);
 	printk(BIOS_ERR, "Write Value: 0x37, Read Value: 0x%x\n", buf[0]); 
+#endif
 }
 void i2c_init(unsigned bus)
 {
@@ -421,7 +423,7 @@ void i2c_init(unsigned bus)
 		case 0:
 			Writel(0xFF730088, 0x00004000);
 			Writel(0xFF73008C, 0x00000001);
-	    //i2c_test(bus);
+	    i2c_test(bus);
 			break;
 		case 1:
 			Writel(0xFF770080, 0x03000100);
