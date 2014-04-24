@@ -16,9 +16,20 @@
 #include <console/console.h>
 #include <device/device.h>
 
+#include "i2c.h"
+
+static void mainboard_init(device_t dev)
+{
+  int i;
+
+	for(i = 0; i < 6; i++)
+		i2c_init(i);
+}
+
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Enable qemu/armv7 device...\n");
+	dev->ops->init = &mainboard_init;
 }
 
 struct chip_operations mainboard_ops = {

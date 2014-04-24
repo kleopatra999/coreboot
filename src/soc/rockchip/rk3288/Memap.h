@@ -60,6 +60,13 @@ Notes :
 #define SARADC_BASE_ADDR        0xff100000
 #define SARADC_BASE             SARADC_BASE_ADDR
 
+#define I2C0_BASE_ADDR					0xff650000
+#define I2C1_BASE_ADDR					0xff140000
+#define I2C2_BASE_ADDR					0xff660000
+#define I2C3_BASE_ADDR					0xff150000
+#define I2C4_BASE_ADDR					0xff160000
+#define I2C5_BASE_ADDR					0xff170000
+
 #define REG_FILE_BASE_ADDR	0xFF770000
 #define VOP_BIG_BASE_ADDR   	0xff930000
 #define DMACS_BUS_BASE_ADDR     0xffb20000
