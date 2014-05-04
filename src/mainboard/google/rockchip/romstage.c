@@ -25,8 +25,9 @@
 
 void main(void)
 {
-        void *entry;
+	void *entry;
 
+	rkclk_set_pll();
 	console_init();
 	cbmem_initialize_empty();
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");

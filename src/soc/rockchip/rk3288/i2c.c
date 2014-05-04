@@ -5,7 +5,7 @@
 #include <string.h>
 #include <device/i2c.h>
 
-#include "Memap.h"
+#include "memap.h"
 #include "i2c.h"
 
 #define RETRY_COUNT	3

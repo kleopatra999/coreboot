@@ -16,8 +16,8 @@
 #include <console/console.h>
 #include <uart.h>
 #include "uart.h"
-#include "Reg.h"
-#include "Memap.h"
+#include "reg.h"
+#include "memap.h"
 
 //#define g_3188_grfReg ((pRK3066B_GRF_REG)GRF_BASE)
 #define g_grfReg 		((pGRF_REG)GRF_BASE)
