@@ -1,43 +1,59 @@
+
 /*
- * This file is part of the libpayload project.
+ * Copyright 2013 Google Inc.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * See file CREDITS for list of people who contributed to this
+ * project.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
-/**
- * @file arm/timer.c
- * ARM specific timer routines
- */
-
+#include <arch/io.h>
 #include <libpayload.h>
+#include <stdint.h>
 
-/**
- * @ingroup arch
- * Global variable containing the speed of the processor in KHz.
- */
+typedef volatile struct tagTIMER_STRUCT
+{
+	u32 TIMER_LOAD_COUNT0;
+	u32 TIMER_LOAD_COUNT1;
+	u32 TIMER_CURR_VALUE0;
+	u32 TIMER_CURR_VALUE1;
+	u32 TIMER_CTRL_REG;
+	u32 TIMER_INT_STATUS;
+}TIMER_REG,*pTIMER_REG;
+
+#define TIMER_LOAD_VAL	0xffffffff
+
+uint64_t timer_hz(void)
+{
+	return 24000000;//CONFIG_DRIVER_TIMER_ROCKCHIP_HZ;
+}
+
+uint64_t timer_raw_value(void)
+{
+	static int enabled = 0;
+	pTIMER_REG g_Time0Reg = ((pTIMER_REG)0xFF6B0000);
+	if (!enabled) {
+		g_Time0Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
+		g_Time0Reg->TIMER_CTRL_REG = 0x01;
+	}
+	return g_Time0Reg->TIMER_CURR_VALUE0;
+}
+
+
 u32 cpu_khz;
 
 /**
@@ -48,7 +64,14 @@ u32 cpu_khz;
 unsigned int get_cpu_speed(void)
 {
 	/* FIXME */
-	cpu_khz = 1000000U;
+	cpu_khz = 24000;
 
 	return cpu_khz;
 }
+
+
+
+
+
+
+
