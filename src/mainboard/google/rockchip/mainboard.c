@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <soc/rockchip/rk3288/i2c.h>
 
 
 

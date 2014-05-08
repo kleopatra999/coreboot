@@ -45,6 +45,8 @@ int rk_get_ddr_pll(void);
 
 int rk_get_new_pll(void);
 
+int rkclk_soft_reset(void);
+
 
 #endif	/* _RKXX_CLOCK_H */
 

@@ -304,17 +304,6 @@ typedef volatile struct TagSDC_REG2
     volatile u32 SDMMC_BACK_END_POWER; //Back-end Power
 }SDC_REG_T2,*pSDC_REG_T2;
 
-
-
-
-#define I2C2_BASE_ADDR          0xFF650000
-#define I2C0_BASE_ADDR          0xFF650000
-#define I2C1_BASE_ADDR          0xFF140000
-#define I2C3_BASE_ADDR          0xFF150000
-#define I2C4_BASE_ADDR          0xFF160000
-#define I2C5_BASE_ADDR          0xFF170000
-
-
 #define g_Time0Reg      ((pTIMER_REG)TIMER0_BASE_ADDR)
 #define g_EMMCReg       ((pSDC_REG_T2)EMMC_BASE_ADDR)
 //#define g_grfReg 		((pGRF_REG)GRF_BASE)

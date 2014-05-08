@@ -3,9 +3,20 @@
  * zyw <zyw@rock-chips.com>
  *
  */
+#include <console/console.h>
+#include <arch/io.h>
 
 #include "gpio.h"
 
+
+#if 1
+#define gpio_err(x...)          printk(BIOS_INFO, ## x)
+#else
+#define gpio_err(x...)
+#endif
+
+#define gpio_readl(addr)	readl((const void *)addr)
+#define gpio_writel(v, addr)	writel(v, (int*)addr)
 
 /*
  * It's how we calculate the full port address
@@ -20,11 +31,11 @@ int gpio_set_value(unsigned gpio, int value)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group \n");
+        gpio_err("no gpio group \n");
         return -1;
     }
-    if(value)writel(readl(reg_addr+RK_GPIO_WRITE_REG)|(1ul<<index),reg_addr+RK_GPIO_WRITE_REG);
-    else writel(readl(reg_addr+RK_GPIO_WRITE_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_WRITE_REG);
+    if(value)gpio_writel(gpio_readl(reg_addr+RK_GPIO_WRITE_REG)|(1ul<<index), reg_addr+RK_GPIO_WRITE_REG);
+    else gpio_writel(gpio_readl(reg_addr+RK_GPIO_WRITE_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_WRITE_REG);
     return 0;
 }
 
@@ -34,9 +45,9 @@ int gpio_get_value(unsigned gpio)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group \n");
+        gpio_err("no gpio group \n");
     }
-    return (readl(reg_addr+RK_GPIO_READ_REG) >> index)&0x1;
+    return (gpio_readl(reg_addr+RK_GPIO_READ_REG) >> index)&0x1;
 }
 
 int gpio_request(unsigned gpio, const char *label)
@@ -55,9 +66,9 @@ int gpio_irq_state(unsigned gpio)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group \n");
+        gpio_err("no gpio group \n");
     }
-    return (readl(reg_addr+RK_GPIO_INT_STATUS) >> index)&0x1;
+    return (gpio_readl(reg_addr+RK_GPIO_INT_STATUS) >> index)&0x1;
 }
 
 int gpio_irq_clr(unsigned gpio)
@@ -66,10 +77,10 @@ int gpio_irq_clr(unsigned gpio)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group \n");
+        gpio_err("no gpio group \n");
         return -1;
     }
-    writel(readl(reg_addr+RK_GPIO_INT_EOI)|(1ul<<index), reg_addr+RK_GPIO_INT_EOI);
+    gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_EOI)|(1ul<<index), reg_addr+RK_GPIO_INT_EOI);
 
     return 0;
 }
@@ -80,27 +91,27 @@ int gpio_irq_request(unsigned gpio, int type)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group 0x%x\n",gpio);
+        gpio_err("no gpio group 0x%x\n",gpio);
         return -1;
     }
-    //printf("%s,reg_addr=0x%x,index=%d,type=%d,addr = %x\n",__func__,reg_addr,index,type,reg_addr+RK_GPIO_DEBOUNCE_REG);
-    writel(readl(reg_addr+RK_GPIO_DIR_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_DIR_REG);   //input
-	writel(readl(reg_addr+RK_GPIO_INT_MASK)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_MASK); //int mask
-    writel(readl(reg_addr+RK_GPIO_DEBOUNCE_REG)|(1ul<<index), reg_addr+RK_GPIO_DEBOUNCE_REG);  //debounce
+    //gpio_err("%s,reg_addr=0x%x,index=%d,type=%d,addr = %x\n",__func__,reg_addr,index,type,reg_addr+RK_GPIO_DEBOUNCE_REG);
+    gpio_writel(gpio_readl(reg_addr+RK_GPIO_DIR_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_DIR_REG);   //input
+	gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_MASK)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_MASK); //int mask
+    gpio_writel(gpio_readl(reg_addr+RK_GPIO_DEBOUNCE_REG)|(1ul<<index), reg_addr+RK_GPIO_DEBOUNCE_REG);  //debounce
  
     if((type & IRQ_TYPE_EDGE_RISING) || (type&IRQ_TYPE_EDGE_FALLING))
-        writel(readl(reg_addr+RK_GPIO_INT_LEVEL)|(1ul<<index), reg_addr+RK_GPIO_INT_LEVEL);   //use edge sensitive
+        gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_LEVEL)|(1ul<<index), reg_addr+RK_GPIO_INT_LEVEL);   //use edge sensitive
     else if((type & IRQ_TYPE_LEVEL_HIGH) || (type&IRQ_TYPE_LEVEL_LOW))
-        writel(readl(reg_addr+RK_GPIO_INT_LEVEL)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_LEVEL); //use level 
+        gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_LEVEL)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_LEVEL); //use level 
 
     if((type & IRQ_TYPE_EDGE_RISING) || (type&IRQ_TYPE_LEVEL_HIGH))
-        writel(readl(reg_addr+RK_GPIO_INT_POLARITY)|(1ul<<index), reg_addr+RK_GPIO_INT_POLARITY);		
+        gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_POLARITY)|(1ul<<index), reg_addr+RK_GPIO_INT_POLARITY);		
 	else if((type & IRQ_TYPE_EDGE_FALLING) || (type&IRQ_TYPE_LEVEL_LOW))
-		writel(readl(reg_addr+RK_GPIO_INT_POLARITY)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_POLARITY);
+		gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_POLARITY)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_POLARITY);
 
     if(type)
-	    writel(readl(reg_addr+RK_GPIO_INT_EN)|(1ul<<index), reg_addr+RK_GPIO_INT_EN);          //enable int
-    else writel(readl(reg_addr+RK_GPIO_INT_EN)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_EN);
+	    gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_EN)|(1ul<<index), reg_addr+RK_GPIO_INT_EN);          //enable int
+    else gpio_writel(gpio_readl(reg_addr+RK_GPIO_INT_EN)&(~(1ul<<index)), reg_addr+RK_GPIO_INT_EN);
     return 0;
 }
 
@@ -110,11 +121,11 @@ int gpio_direction_input(unsigned gpio)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group 0x%x\n",gpio);
+        gpio_err("no gpio group 0x%x\n",gpio);
         return -1;
     }
-    writel(readl(reg_addr+RK_GPIO_DIR_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_DIR_REG);
-   // writel(reg_addr+RK_GPIO_DEBOUNCE_REG,  readl(reg_addr+RK_GPIO_DEBOUNCE_REG)|(1ul<<index));
+    gpio_writel(gpio_readl(reg_addr+RK_GPIO_DIR_REG)&(~(1ul<<index)), reg_addr+RK_GPIO_DIR_REG);
+   // gpio_writel(reg_addr+RK_GPIO_DEBOUNCE_REG,  gpio_readl(reg_addr+RK_GPIO_DEBOUNCE_REG)|(1ul<<index));
     return 0;
 }
 
@@ -124,9 +135,9 @@ int gpio_direction_output(unsigned gpio, int value)
     int index = gpio&0xffff;
     if(reg_addr==0)
     {
-        printf("no gpio group 0x%x\n",gpio);
+        gpio_err("no gpio group 0x%x\n",gpio);
         return -1;
     }
-    writel(readl(reg_addr+RK_GPIO_DIR_REG)|(1ul<<index), reg_addr+RK_GPIO_DIR_REG);
+    gpio_writel(gpio_readl(reg_addr+RK_GPIO_DIR_REG)|(1ul<<index), reg_addr+RK_GPIO_DIR_REG);
 	return gpio_set_value(gpio, value);
 }

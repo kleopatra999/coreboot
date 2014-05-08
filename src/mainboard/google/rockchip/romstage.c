@@ -21,6 +21,8 @@
 #include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <soc/rockchip/rk3288/clock.h>
+
 
 
 void main(void)

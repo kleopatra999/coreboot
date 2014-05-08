@@ -339,6 +339,9 @@ enum {
 	IRQ_TYPE_SENSE_MASK	= 0x0000000f,
 	IRQ_TYPE_DEFAULT	= IRQ_TYPE_SENSE_MASK,
 };
+int gpio_irq_state(unsigned gpio);
+int gpio_irq_clr(unsigned gpio);
+int gpio_irq_request(unsigned gpio, int type);
 
 int gpio_request(unsigned gpio, const char *label);
 int gpio_free(unsigned gpio);
@@ -347,6 +350,5 @@ int gpio_direction_output(unsigned gpio, int value);
 int gpio_get_value(unsigned gpio);
 int gpio_set_value(unsigned gpio, int value);
 int gpio_is_valid(int number);
-int gpio_irq_request(unsigned gpio, int type);
 
 #endif /* _ASM_ROCKCHIP_GPIO_H_ */

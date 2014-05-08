@@ -28,6 +28,7 @@
 #include "clock.h"
 #include "reg.h"
 #include "memap.h"
+#include <delay.h>
 
 #define CONFIG_RKCLK_APLL_FREQ		1008 /* MHZ */
 #define CONFIG_RKCLK_GPLL_FREQ		594 /* MHZ */
@@ -356,8 +357,8 @@ struct pll_clk_set {
 	u8	pclk_div;
 };
 
-#define cru_readl(offset)	readl(CRU_BASE_ADDR + offset)
-#define cru_writel(v, offset)	do { writel(v, CRU_BASE_ADDR + offset); } while (0)
+#define cru_readl(offset)	readl((const void *)(CRU_BASE_ADDR + offset))
+#define cru_writel(v, offset)	do { writel(v, (int*)(CRU_BASE_ADDR + offset)); } while (0)
 
 
 #define _APLL_SET_CLKS(khz, nr, nf, no, _a12_div, _mp_div, _m0_div, _l2_div, _atclk_div, _pclk_dbg_div) \
@@ -471,14 +472,6 @@ struct pll_data rkpll_data[END_PLL_ID] = {
 	SET_PLL_DATA(GPLL_ID, gpll_clks, ARRAY_SIZE(gpll_clks)),
 };
 
-int rkclk_soft_reset(void)
-{
-    cru_writel(0x3f<<10 | 0x3f<<26, CRU_SOFTRSTS_CON(2));  //soft reset i2c0 - i2c5
-    mdelay(1);
-    cru_writel(0x3f<<26, CRU_SOFTRSTS_CON(2));
-    return 0;
-}
-
 static void rkclk_pll_wait_lock(enum rk_plls_id pll_id)
 {
 	#define GRF_SOC_STATUS1		0x0284
@@ -487,7 +480,7 @@ static void rkclk_pll_wait_lock(enum rk_plls_id pll_id)
 
 	/* delay for pll lock */
 	while (1) {
-		if (readl(REG_FILE_BASE_ADDR + GRF_SOC_STATUS1) & bit) {
+		if (readl((const void *)(REG_FILE_BASE_ADDR + GRF_SOC_STATUS1)) & bit) {
 			break;
 		}
 		clk_loop_delayus(1);
@@ -577,67 +570,6 @@ static uint32_t rkclk_pll_clk_get_rate(enum rk_plls_id pll_id)
 		/* deep slow mode */
 		return 32768;
 	}
-}
-
-
-/*
- * rkplat clock set bus clock from general pll
- * 	when call this function, make sure pll is in slow mode
- */
-static void rkclk_bus_ahpclk_set(uint32_t pll_src, uint32_t axi_div, uint32_t aclk_div, uint32_t hclk_div, uint32_t pclk_div)
-{
-	uint32_t pll_sel = 0, axi_bus_div = 0, a_div = 0, h_div = 0, p_div = 0;
-
-	/* pd bus clock source select: 0: codec pll, 1: general pll */
-	if (pll_src == 0) {
-		pll_sel = PDBUS_SEL_CPLL;
-	} else {
-		pll_sel = PDBUS_SEL_GPLL;
-	}
-
-	/* pd bus axi - clk = clk_src / (axi_div_con + 1) */
-	if (axi_div == 0) {
-		axi_bus_div = 1;
-	} else {
-		axi_bus_div = axi_div - 1;
-	}
-
-	/* pd bus aclk - aclk_pdbus = clk_src / (aclk_div_con + 1) */
-	if (aclk_div == 0) {
-		a_div = 1;
-	} else {
-		a_div = aclk_div - 1;
-	}
-
-	/* pd bus hclk - aclk_bus: hclk_bus = 1:1 or 2:1 or 4:1 */
-	switch (hclk_div)
-	{
-		case CLK_DIV_1:
-			h_div = 0;
-			break;
-		case CLK_DIV_2:
-			h_div = 1;
-			break;
-		case CLK_DIV_4:
-			h_div = 2;
-			break;
-		default:
-			h_div = 1;
-			break;
-	}
-
-	/* pd bus pclk - pclk_pdbus = clk_src / (pclk_div_con + 1) */
-	if (pclk_div == 0) {
-		p_div = 1;
-	} else {
-		p_div = pclk_div - 1;
-	}
-
-	cru_writel((PDBUS_SEL_PLL_W_MSK | pll_sel)
-			| (PDBUS_PCLK_DIV_W_MSK | (p_div << PDBUS_PCLK_DIV_OFF))
-			| (PDBUS_HCLK_DIV_W_MSK | (h_div << PDBUS_HCLK_DIV_OFF))
-			| (PDBUS_ACLK_DIV_W_MSK | (a_div << PDBUS_ACLK_DIV_OFF))
-			| (PDBUS_AXI_DIV_W_MSK | (axi_bus_div << PDBUS_AXI_DIV_OFF)), CRU_CLKSELS_CON(1));
 }
 
 
@@ -785,6 +717,88 @@ static void rkclk_cpu_l2dbgatclk_set(uint32_t l2ram_div, uint32_t atclk_core_div
 }
 
 
+
+
+static void rkclk_apll_cb(struct pll_clk_set *clkset)
+{
+	rkclk_cpu_coreclk_set(CPU_SRC_ARM_PLL, clkset->a12_core_div, clkset->aclk_core_mp_div, clkset->aclk_core_m0_div);
+	rkclk_cpu_l2dbgatclk_set(clkset->l2ram_div, clkset->atclk_core_div, clkset->pclk_dbg_div);
+}
+
+
+static void rkclk_gpll_cb(struct pll_clk_set *clkset)
+{
+	rkclk_periph_ahpclk_set(PERIPH_SRC_GENERAL_PLL, clkset->aclk_div, clkset->hclk_div, clkset->pclk_div);
+}
+
+#if 0
+static void rkclk_dpll_cb(struct pll_clk_set *clkset)
+{
+	rkclk_ddr_clk_set(DDR_SRC_DDR_PLL, clkset->a12_core_div);
+}
+
+/*
+ * rkplat clock set bus clock from general pll
+ * 	when call this function, make sure pll is in slow mode
+ */
+static void rkclk_bus_ahpclk_set(uint32_t pll_src, uint32_t axi_div, uint32_t aclk_div, uint32_t hclk_div, uint32_t pclk_div)
+{
+	uint32_t pll_sel = 0, axi_bus_div = 0, a_div = 0, h_div = 0, p_div = 0;
+
+	/* pd bus clock source select: 0: codec pll, 1: general pll */
+	if (pll_src == 0) {
+		pll_sel = PDBUS_SEL_CPLL;
+	} else {
+		pll_sel = PDBUS_SEL_GPLL;
+	}
+
+	/* pd bus axi - clk = clk_src / (axi_div_con + 1) */
+	if (axi_div == 0) {
+		axi_bus_div = 1;
+	} else {
+		axi_bus_div = axi_div - 1;
+	}
+
+	/* pd bus aclk - aclk_pdbus = clk_src / (aclk_div_con + 1) */
+	if (aclk_div == 0) {
+		a_div = 1;
+	} else {
+		a_div = aclk_div - 1;
+	}
+
+	/* pd bus hclk - aclk_bus: hclk_bus = 1:1 or 2:1 or 4:1 */
+	switch (hclk_div)
+	{
+		case CLK_DIV_1:
+			h_div = 0;
+			break;
+		case CLK_DIV_2:
+			h_div = 1;
+			break;
+		case CLK_DIV_4:
+			h_div = 2;
+			break;
+		default:
+			h_div = 1;
+			break;
+	}
+
+	/* pd bus pclk - pclk_pdbus = clk_src / (pclk_div_con + 1) */
+	if (pclk_div == 0) {
+		p_div = 1;
+	} else {
+		p_div = pclk_div - 1;
+	}
+
+	cru_writel((PDBUS_SEL_PLL_W_MSK | pll_sel)
+			| (PDBUS_PCLK_DIV_W_MSK | (p_div << PDBUS_PCLK_DIV_OFF))
+			| (PDBUS_HCLK_DIV_W_MSK | (h_div << PDBUS_HCLK_DIV_OFF))
+			| (PDBUS_ACLK_DIV_W_MSK | (a_div << PDBUS_ACLK_DIV_OFF))
+			| (PDBUS_AXI_DIV_W_MSK | (axi_bus_div << PDBUS_AXI_DIV_OFF)), CRU_CLKSELS_CON(1));
+}
+
+
+
 /*
  * rkplat clock set ddr clock from ddr pll
  * 	when call this function, make sure pll is in slow mode
@@ -819,26 +833,6 @@ static void rkclk_ddr_clk_set(uint32_t pll_src, uint32_t ddr_div)
 
 	cru_writel((0x01 << (8 + 16) | (pll_sel << 8)) | ((0x03 << (0 + 16)) | (div << 0)), CRU_CLKSELS_CON(26));
 }
-
-
-static void rkclk_apll_cb(struct pll_clk_set *clkset)
-{
-	rkclk_cpu_coreclk_set(CPU_SRC_ARM_PLL, clkset->a12_core_div, clkset->aclk_core_mp_div, clkset->aclk_core_m0_div);
-	rkclk_cpu_l2dbgatclk_set(clkset->l2ram_div, clkset->atclk_core_div, clkset->pclk_dbg_div);
-}
-
-
-static void rkclk_gpll_cb(struct pll_clk_set *clkset)
-{
-	rkclk_periph_ahpclk_set(PERIPH_SRC_GENERAL_PLL, clkset->aclk_div, clkset->hclk_div, clkset->pclk_div);
-}
-
-
-static void rkclk_dpll_cb(struct pll_clk_set *clkset)
-{
-	rkclk_ddr_clk_set(DDR_SRC_DDR_PLL, clkset->a12_core_div);
-}
-
 
 static uint32_t rkclk_get_cpu_mp_div(void)
 {
@@ -1007,6 +1001,8 @@ static uint32_t rkclk_get_periph_pclk_div(void)
 	return div;
 }
 
+#endif
+
 int rk_get_arm_pll(void)
 {
 	return rkclk_pll_clk_get_rate(APLL_ID);
@@ -1042,3 +1038,12 @@ void rkclk_set_pll(void)
 	rkclk_pll_clk_set_rate(GPLL_ID, CONFIG_RKCLK_GPLL_FREQ, rkclk_gpll_cb);
 	rkclk_pll_clk_set_rate(CPLL_ID, CONFIG_RKCLK_CPLL_FREQ, NULL);
 }
+
+int rkclk_soft_reset(void)
+{
+    cru_writel(0x3f<<10 | 0x3f<<26, CRU_SOFTRSTS_CON(2));  //soft reset i2c0 - i2c5
+    mdelay(1);
+    cru_writel(0x3f<<26, CRU_SOFTRSTS_CON(2));
+    return 0;
+}
+

@@ -91,7 +91,7 @@ static inline unsigned long long usec_to_tick(unsigned long long usec)
 	do_div(usec, 1000000);
 	return usec;
 }
-static inline unsigned long get_rk_current_tick()
+static inline unsigned long get_rk_current_tick(void)
 {
     return g_Time0Reg->TIMER_CURR_VALUE0;
 }
@@ -119,8 +119,6 @@ void __udelay(unsigned long usec)
 }
 
 
-
-void udelay(unsigned int n);
 void udelay(unsigned int n) {
 	/* TODO provide delay here. */
 	__udelay(n);
