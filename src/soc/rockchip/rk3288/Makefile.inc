@@ -11,6 +11,7 @@ romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 romstage-y += timer.c
 romstage-y += i2c.c
 romstage-y += clock.c
+romstage-y += gpio.c
 
 ramstage-y += cpu.c
 ramstage-y += cache.c
