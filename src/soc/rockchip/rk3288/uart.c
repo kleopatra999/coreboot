@@ -18,21 +18,23 @@
 #include "uart.h"
 #include "reg.h"
 #include "memap.h"
+#include "pinmux.h"
+
 
 //#define g_3188_grfReg ((pRK3066B_GRF_REG)GRF_BASE)
-#define g_grfReg 		((pGRF_REG)GRF_BASE)
+//#define g_grfReg 		((pGRF_REG)GRF_BASE)
 
 #define UART2_BASE_ADDR            0xFF690000
 pUART_REG pUartReg = (pUART_REG)UART2_BASE_ADDR;
 #define ReadReg32(addr)                     (*(volatile u32 *)(addr))
 #define WriteReg32(addr, data)              (*(volatile u32 *)(addr) = data)
 
-
 static void pl011_init_dev(void) {
     u32  uartTemp;
     //g_grfReg->GRF_GPIO_IOMUX[1].GPIOB_IOMUX = (((0x3<<2)|(0x3))<<16)|(0x1<<2)|(0x1);   // sin,sout uart2
-    WriteReg32(((0x03<<8)|(0x03<<12))|((0x01<<8)|(0x01<<12)), GRF_BASE + 0x78);
-
+    //WriteReg32(((0x03<<8)|(0x03<<12))|((0x01<<8)|(0x01<<12)), GRF_BASE + 0x78);
+    rk_iomux_config(RK_UART_DBG_IOMUX);
+    
     //Reset
     pUartReg->UART_SRR = UART_RESET | RCVR_FIFO_REST | XMIT_FIFO_RESET;
     pUartReg->UART_IER = 0;

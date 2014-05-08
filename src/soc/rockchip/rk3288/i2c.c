@@ -7,6 +7,7 @@
 
 #include "memap.h"
 #include "i2c.h"
+#include "pinmux.h"
 
 #define RETRY_COUNT	3
 #define I2C_TIMEOUT_US	100000  // 100000us = 100ms
@@ -423,29 +424,23 @@ void i2c_init(unsigned bus)
 	// set i2c iomux
 	switch(bus){
 		case 0:
-			Writel(0xFF730088, 0x00004000);
-			Writel(0xFF73008C, 0x00000001);
+          rk_iomux_config(RK_I2C0_IOMUX);
 	    i2c_test(bus);
 			break;
 		case 1:
-			Writel(0xFF770080, 0x03000100);
-			Writel(0xFF770080, 0x0C000400);
+			rk_iomux_config(RK_I2C1_IOMUX);
 			break;
 		case 2:
-			Writel(0xFF770060, 0x000C0004);
-			Writel(0xFF770060, 0x00300010);
+			rk_iomux_config(RK_I2C2_IOMUX);
 			break;
 		case 3:
-			Writel(0xFF770018, 0x00030001);
-			Writel(0xFF770018, 0x000C0004);
+			rk_iomux_config(RK_I2C3_IOMUX);
 			break;
 		case 4:
-			Writel(0xFF770074, 0x00F00010);
-			Writel(0xFF770074, 0x0F000100);
+			rk_iomux_config(RK_I2C4_IOMUX);
 			break;
 		case 5:
-			Writel(0xFF770074, 0xF0001000);
-			Writel(0xFF770078, 0x000F0001);
+			rk_iomux_config(RK_I2C5_IOMUX);
 			break;
 		default:
 			break;
