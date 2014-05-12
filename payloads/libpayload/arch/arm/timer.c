@@ -45,12 +45,19 @@ uint64_t timer_hz(void)
 uint64_t timer_raw_value(void)
 {
 	static int enabled = 0;
-	pTIMER_REG g_Time0Reg = ((pTIMER_REG)0xFF6B0000);
+	uint64_t value0;
+	uint64_t value1;
+	pTIMER_REG g_Time7Reg = ((pTIMER_REG)0xFF810020);
 	if (!enabled) {
-		g_Time0Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
-		g_Time0Reg->TIMER_CTRL_REG = 0x01;
+		g_Time7Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
+		g_Time7Reg->TIMER_LOAD_COUNT1 = TIMER_LOAD_VAL;
+		g_Time7Reg->TIMER_CTRL_REG = 0x01;
+		enabled = 1;
 	}
-	return g_Time0Reg->TIMER_CURR_VALUE0;
+	value0 =(uint64_t)g_Time7Reg->TIMER_CURR_VALUE0;// (uint64_t)g_Time7Reg->TIMER_CURR_VALUE1<<32;
+	value1 = (uint64_t)g_Time7Reg->TIMER_CURR_VALUE1;
+	value0 = value0 | value1<<32;
+	return (uint64_t)g_Time7Reg->TIMER_CURR_VALUE0;// value0;
 }
 
 

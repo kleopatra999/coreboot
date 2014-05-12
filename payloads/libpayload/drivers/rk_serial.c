@@ -36,18 +36,18 @@ pUART_REG pUartReg = (pUART_REG)UART2_BASE_ADDR;
 #define ReadReg32(addr)                     (*(volatile u32 *)(addr))
 #define WriteReg32(addr, data)              (*(volatile u32 *)(addr) = data)
 
-static int serial_hardware_is_present = 0;
-static int serial_is_mem_mapped = 0;
+//static int serial_hardware_is_present = 0;
+//static int serial_is_mem_mapped = 0;
 
-static uint8_t serial_read_reg(int offset)
-{
+//static uint8_t serial_read_reg(int offset)
+//{
+//	return 0;
+//}
 
-}
+//static void serial_write_reg(uint8_t val, int offset)
+//{
 
-static void serial_write_reg(uint8_t val, int offset)
-{
-
-}
+//}
 
 #ifdef CONFIG_LP_SERIAL_SET_SPEED
 static void serial_hardware_init(int speed, int word_bits,
@@ -100,18 +100,17 @@ void serial_putchar(unsigned int c)
 int serial_havechar(void)
 {
 
-	
+	return 0;
 }
 
 int serial_getchar(void)
 {
-	
+	return 0;
 }
+#if 1
 #define  UART_LSR_TEMT                0x40 /* Transmitter empty */
 
-//#define UART2_BASE_ADDR 0xFF690000
-
-int uart_wrtie_byte(char byte)
+static int uart_wrtie_byte(char byte)
 {
     pUART_REG puartRegStart = (pUART_REG)UART2_BASE_ADDR; 
     puartRegStart->UART_RBR = byte;
@@ -119,18 +118,7 @@ int uart_wrtie_byte(char byte)
     return (0);
 }
 
-void print(char *s)
-{
-	while (*s) 
-	{
-		if (*s == '\n')
-		{
-		    uart_wrtie_byte('\r');
-		}
-	    uart_wrtie_byte(*s);
-	    s++;
-	}
-}
+
 void _print_hex (int hex)
 {
     int i = 8;
@@ -142,4 +130,4 @@ void _print_hex (int hex)
 		hex <<= 4;
 	}
 }
-
+#endif
