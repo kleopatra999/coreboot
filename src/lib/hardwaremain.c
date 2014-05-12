@@ -48,6 +48,7 @@
 #define BS_DEBUG_LVL BIOS_NEVER
 #endif
 
+
 static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);
 static boot_state_t bs_dev_enumerate(void *arg);
@@ -230,12 +231,103 @@ static boot_state_t bs_write_tables(void *arg)
  */
 static int chooser = 0;
 
+#define RK_DEBUG 
+#ifdef  RK_DEBUG
+typedef enum{
+	KEY_AD,      // AD°´¼ü
+	KEY_INT,
+}KEY_TYPE;
+typedef struct
+{
+	const char *name;   /* name of the fdt property defining this */
+	u32 gpio;      /* GPIO number, or FDT_GPIO_NONE if none */
+	char flags;       /* FDT_GPIO_... flags */
+}gpio_conf;
+
+
+typedef struct
+{
+	u32  index;
+	u32  keyValueLow;
+	u32  keyValueHigh;
+	u32	data;
+	u32  stas;
+	u32	ctrl;
+}adc_conf;
+
+typedef struct
+{
+	const char *name;   /* name of the fdt property defining this */
+	u32 gpio;      /* GPIO number, or FDT_GPIO_NONE if none */
+	char flags;       /* FDT_GPIO_... flags */
+	u32  pressed_state;
+	u32  press_time;
+}int_conf;
+
+typedef struct {
+	KEY_TYPE type;
+	union{ 
+		adc_conf    adc;    
+		int_conf    ioint;    
+	}key;
+}key_config;
+
+key_config		key_recovery;
+#define SARADC_BASE             0xff100000
+#define read_XDATA(address) 		(*((u16 volatile*)(address)))
+#define read_XDATA32(address)		(*((u32 volatile*)(address)))
+#define write_XDATA(address, value) 	(*((u16 volatile*)(address)) = value)
+#define write_XDATA32(address, value)	(*((u32 volatile*)(address)) = value)
+
+static void RecoveryKeyInit(key_config *key)
+{
+	key->type = KEY_AD;
+	key->key.adc.index = 1;	
+	key->key.adc.keyValueLow = 0;
+	key->key.adc.keyValueHigh= 30;
+	key->key.adc.data = SARADC_BASE;
+	key->key.adc.stas = SARADC_BASE+4;
+	key->key.adc.ctrl = SARADC_BASE+8;
+}
+static u32 GetPortState(key_config *key)
+{
+    u32 tt;
+    u32 hCnt = 0;
+    adc_conf* adc = &key->key.adc; 
+    if(key->type == KEY_AD)
+    {
+    	for(tt = 0; tt < 10; tt++)
+    	{
+    	    // read special gpio port value.
+    	    u32 value;
+    	    u32 timeout = 0;
+            write_XDATA32( adc->ctrl, 0);
+    	    udelay(1);
+            write_XDATA32( adc->ctrl, 0x0028|(adc->index));
+    		udelay(1);
+    		do{
+    		    value = read_XDATA32(adc->ctrl);
+    		    timeout++;
+            }while((value&0x40)==0);
+    		value = read_XDATA32(adc->data);
+            //printf("adc key = %d\n",value);
+    		//DRVDelayUs(1000);
+    		if( value<=adc->keyValueHigh && value>=adc->keyValueLow)
+                hCnt++;
+    	}
+        write_XDATA32( adc->ctrl, 0);
+        return (hCnt>8);
+    }
+	return 0;
+}
+
+#endif
+
 static boot_state_t bs_payload_load(void *arg)
 {
 	void *payload = NULL;
 	void *entry;
-	const char *payload_name =  CONFIG_CBFS_PREFIX "/payload";
-
+	const char *payload_name =  CONFIG_CBFS_PREFIX "/payload";//CONFIG_CBFS_PREFIX "/uboot";//
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
 	if (chooser) {
@@ -265,10 +357,25 @@ static boot_state_t bs_payload_load(void *arg)
 						    payload_name);
 		}
 	}
-
-	if (! payload)
+	#ifdef RK_DEBUG
+	const char *uboot_name = CONFIG_CBFS_PREFIX "/uboot";
+	RecoveryKeyInit(&key_recovery);
+	if (! payload){
+		if(GetPortState(&key_recovery)){
+		payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
+				   uboot_name);
+		}
+		else{
 		payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
 				   payload_name);
+		}
+	}
+	#else
+	if (! payload){
+		payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
+				   payload_name);
+	}
+	#endif
 	if (! payload)
 		die("Could not find a payload\n");
 
