@@ -118,6 +118,18 @@ static int uart_wrtie_byte(char byte)
     return (0);
 }
 
+void print(char *s)
+{
+	while (*s) 
+	{
+		if (*s == '\n')
+		{
+		    uart_wrtie_byte('\r');
+		}
+	    uart_wrtie_byte(*s);
+	    s++;
+	}
+}
 
 void _print_hex (int hex)
 {
@@ -129,5 +141,7 @@ void _print_hex (int hex)
 		uart_wrtie_byte(c < 0xa ? c + '0' : c - 0xa + 'a');
 		hex <<= 4;
 	}
+	uart_wrtie_byte('\r');
+	uart_wrtie_byte('\n');
 }
 #endif

@@ -71,11 +71,11 @@ config DRAM_SIZE_MB
 # 0x1000_0000: I/O map address
 #
 config STACK_TOP
-	hex
+	hex "STACK TOP"
 	default 0x1200000
 
 config STACK_BOTTOM
-	hex
+    hex "STACK BOTTOM"
 	default 0x117FF00
 
 config BOOTBLOCK_BASE
@@ -87,7 +87,7 @@ config ROMSTAGE_BASE
 	default 0x00010000
 
 config RAMSTAGE_BASE
-	hex
+	hex "RAMSTAGE BASE"
 	default SYS_SDRAM_BASE
 
 config BOOTBLOCK_ROM_OFFSET
