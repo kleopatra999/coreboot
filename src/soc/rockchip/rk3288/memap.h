@@ -52,6 +52,8 @@ Notes :
 
 #define TIMER0_BASE_ADDR        0xFF6B0000
 #define TIMER6_BASE_ADDR        0xFF810000
+#define TIMER7_BASE_ADDR        0xFF810020
+
 #define eFUSE_BASE_ADDR         0xFFB40000
 #define RK_PWM0123_BASE_ADDR    0xFF680000
 #define DW_PWM0123_BASE_ADDR    0xFF670000
@@ -81,10 +83,20 @@ Notes :
 #define DDR_PUBL_BASE           DDR_PUBL0_BASE
 #define SDRAM_ADDR              0x00000000
 
-#endif /* _HW_MEMMAP_H */
+#define SPI0_BASE_ADDR          0xff110000
+#define SPI1_BASE_ADDR          0xff120000
+#define SPI2_BASE_ADDR          0xff130000
+
+#define SRAM_ADDR              0xff700000
+
+#define     Service_HEVC            0xffaf0000
+#define     Service_VPU             0xffae0000
+#define     Service_VIO             0xffad0000
+#define     Service_BUS             0xffac0000
+#define     Service_PERI            0xffab0000
+#define     Service_GPU             0xffaa0000
+#define     Service_DMA             0xffa90000
+#define     Service_Core            0xffa80000
 
 
-
-/*********************************************************************
- END OF FILE
-*********************************************************************/
+#endif	/* _EXYNOS5250_CPU_H */

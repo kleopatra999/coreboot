@@ -53,7 +53,7 @@ config MAINBOARD_VENDOR
 
 config SYS_SDRAM_BASE
 	hex "SDRAM base address"
-	default 0x01000000
+	default 0x00000000
 
 config DRAM_SIZE_MB
 	int
@@ -72,19 +72,27 @@ config DRAM_SIZE_MB
 #
 config STACK_TOP
 	hex "STACK TOP"
-	default 0x1200000
+	default 0xff704000
 
 config STACK_BOTTOM
     hex "STACK BOTTOM"
-	default 0x117FF00
+	default 0xff700100
+	
+config ROMSTAGE_STACK_TOP
+	hex "ROMS TAGE STACK TOP"
+	default 0xff708000
 
+config ROMSTAGE_STACK_BOTTOM
+	hex "ROM STAGE STACK BOTTOM"
+	default 0xff700100
+	
 config BOOTBLOCK_BASE
 	hex
-	default 0x00000000
+	default 0xff704004
 
 config ROMSTAGE_BASE
-	hex
-	default 0x00010000
+	hex "ROM STAGE BASE"
+	default 0xff708000
 
 config RAMSTAGE_BASE
 	hex "RAMSTAGE BASE"
@@ -101,5 +109,20 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	hex
 	default 0x0018000
+	
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0xff710000
 
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00008000
+	
+config CBFS_RAMSTAGE_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x01100000
+
+config CBFS_RAMSTAGE_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00100000
 endif #  BOARD_GOOGLE_ROCKCHIP

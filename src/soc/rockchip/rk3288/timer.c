@@ -93,7 +93,7 @@ static inline unsigned long long usec_to_tick(unsigned long long usec)
 }
 static inline unsigned long get_rk_current_tick(void)
 {
-    return g_Time0Reg->TIMER_CURR_VALUE0;
+    return g_Time7Reg->TIMER_CURR_VALUE0;
 }
 
 /* delay x useconds */
@@ -125,6 +125,6 @@ void udelay(unsigned int n) {
 }
 
 void init_timer(void) {
-	g_Time0Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
-	g_Time0Reg->TIMER_CTRL_REG = 0x01;
+	g_Time7Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
+	g_Time7Reg->TIMER_CTRL_REG = 0x01;
 }

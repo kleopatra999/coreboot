@@ -13,9 +13,11 @@
 ## GNU General Public License for more details.
 
 romstage-y += romstage.c
+romstage-y += romstage_main.S
 
 bootblock-y += media.c
 romstage-y += media.c
-ramstage-y += media.c
+ramstage-y += media_ramstage.c
+ramstage-y += mainboard.c
 
 

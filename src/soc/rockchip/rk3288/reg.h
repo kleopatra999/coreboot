@@ -255,6 +255,36 @@ typedef volatile struct tagGRF_REG
     u32 GRF_SOC_CON16;        
 }GRF_REG, *pGRF_REG;
 
+//SGRF FILE registers
+typedef volatile struct tagSGRF_FILE
+{
+    u32 SGRF_SOC_CON[6];
+    u32 reserved1[(0x20-0x18)/4];
+    u32 SGRF_BUSDMAC_CON[2];
+    u32 reserved2[(0x40-0x28)/4];
+    u32 SGRF_CPU_CON[3];
+    u32 reserved3[(0x50-0x4c)/4];
+    u32 SGRF_SOC_CON6;
+    u32 SGRF_SOC_CON7;
+    u32 SGRF_SOC_CON8;
+    u32 SGRF_SOC_CON9;
+    u32 SGRF_SOC_CON10;
+    u32 SGRF_SOC_CON11;
+    u32 SGRF_SOC_CON12;
+    u32 SGRF_SOC_CON13;
+    u32 SGRF_SOC_CON14;
+    u32 SGRF_SOC_CON15;
+    u32 SGRF_SOC_CON16;
+    u32 SGRF_SOC_CON17;
+    u32 SGRF_SOC_CON18;
+    u32 SGRF_SOC_CON19;
+    u32 SGRF_SOC_CON20;
+    u32 SGRF_SOC_CON21;
+    u32 reserved4[(0x100-0x90)/4];
+    u32 SGRF_SOC_STATUS[2];
+    u32 reserved5[(0x120-0x108)/4];
+    u32 SGRF_FAST_BOOT_ADDR;
+} SGRF_REG, *pSGRF_REG;
 
 typedef volatile struct tagTIMER_STRUCT
 {
@@ -305,8 +335,12 @@ typedef volatile struct TagSDC_REG2
 }SDC_REG_T2,*pSDC_REG_T2;
 
 #define g_Time0Reg      ((pTIMER_REG)TIMER0_BASE_ADDR)
+#define g_Time7Reg      ((pTIMER_REG)TIMER7_BASE_ADDR)
+
 #define g_EMMCReg       ((pSDC_REG_T2)EMMC_BASE_ADDR)
-//#define g_grfReg 		((pGRF_REG)GRF_BASE)
+#define g_grfReg 		((pGRF_REG)GRF_BASE)
+#define g_sgrfReg 		((pSGRF_REG)GRF_SECURE_BASE)
+#define g_cruReg 		((pCRU_REG)CRU_BASE_ADDR)
 
 #define 	read_XDATA(address) 			(*((uint16 volatile*)(address)))
 #define 	read_XDATA32(address)			(*((u32 volatile*)(address)))

@@ -22,15 +22,16 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <soc/rockchip/rk3288/clock.h>
+#include <soc/rockchip/rk3288/timer.h>
 
-
-
-void main(void)
+void romstage_init(void)
 {
 	void *entry;
-
+	init_timer();
 	rkclk_set_pll();
 	console_init();
+	dram_main();
+	udelay(100);
 	cbmem_initialize_empty();
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 

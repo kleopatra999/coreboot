@@ -64,6 +64,7 @@ int init_emu_rom_cbfs_media(struct cbfs_media *media)
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
+	printk(BIOS_DEBUG,"init_default_cbfs_media\n");
 	//return init_emu_rom_cbfs_media(media);
-	return initialize_rockchip_spi_cbfs_media(media,(void*)CONFIG_CBFS_CACHE_ADDRESS,CONFIG_CBFS_CACHE_SIZE);
+	return initialize_rockchip_spi_cbfs_media(media,(void*)CONFIG_CBFS_RAMSTAGE_CACHE_ADDRESS,CONFIG_CBFS_RAMSTAGE_CACHE_SIZE);
 }

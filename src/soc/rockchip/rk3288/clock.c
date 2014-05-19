@@ -339,6 +339,12 @@ enum rk_plls_id {
 #define DDR_SRC_DDR_PLL			0
 #define DDR_SRC_GENERAL_PLL		1
 
+//GRF_SOC_STATUS1
+#define DPLL_LOCK  (1<<5)
+#define APLL_LOCK  (1<<6)
+#define CPLL_LOCK  (1<<7)
+#define GPLL_LOCK  (1<<8)
+#define NPLL_LOCK  (1<<9)
 
 struct pll_clk_set {
 	unsigned long	rate;
@@ -1044,6 +1050,65 @@ int rkclk_soft_reset(void)
     cru_writel(0x3f<<10 | 0x3f<<26, CRU_SOFTRSTS_CON(2));  //soft reset i2c0 - i2c5
     mdelay(1);
     cru_writel(0x3f<<26, CRU_SOFTRSTS_CON(2));
+    return 0;
+}
+void rkclk_set_ddr_freq(unsigned int MHz)
+{
+    unsigned int nr,no,nf;
+    int delay = 1000;
+    unsigned int lock[]={APLL_LOCK,DPLL_LOCK,CPLL_LOCK,GPLL_LOCK};
+    unsigned int pll_id = DPLL_ID;
+    if(MHz <= 150)
+    {
+        no = 8;
+    }
+    else if(MHz <= 200)
+    {
+        no = 6;
+    }
+    else if(MHz <= 300)
+    {
+        no = 4;
+    }
+    else if(MHz <= 600)
+    {
+        no = 2;
+    }
+    else
+    {
+        no = 1;
+    }
+    nr = 1;
+    nf=(MHz*nr*no)/24;
+    
+    /* PLL enter slow-mode */
+    cru_writel(PLL_MODE_SLOW(pll_id), CRU_MODE_CON);
+    //g_cruReg->CRU_PLL_CON[pll_id][3] = PLL_RESET;
+    /* enter rest */
+    cru_writel((PLL_RESET | PLL_RESET_W_MSK), PLL_CONS(pll_id, 3));
+    
+    
+    cru_writel(NR(nr) | NO(no), PLL_CONS(pll_id, 0));
+    cru_writel(NF(nf), PLL_CONS(pll_id, 1));
+    cru_writel(NB(nf>>1), PLL_CONS(pll_id, 2));
+    
+    
+
+    
+    udelay(1);
+    cru_writel(PLL_RESET_RESUME | PLL_RESET_W_MSK, PLL_CONS(pll_id, 3));
+    udelay(1000);
+    while (delay > 0) 
+    {
+        if (g_grfReg->GRF_SOC_STATUS[1] & lock[pll_id])
+            break;
+        delay--;
+    }
+	
+
+    /* PLL enter normal-mode */
+    cru_writel(PLL_MODE_NORM(pll_id), CRU_MODE_CON);
+    
     return 0;
 }
 
