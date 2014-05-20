@@ -1,0 +1,23 @@
+config CPU_ROCKCHIP_RK3288
+	depends on ARCH_ARM
+	select CPU_HAS_BOOTBLOCK_INIT
+	select MAINBOARD_HAS_BOOTBLOCK_INIT
+	bool
+	select EARLY_CONSOLE
+	default n
+
+if CPU_ROCKCHIP_RK3288
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/rockchip/rk3288/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code.
+	  
+config MAINBOARD_HAS_BOOTBLOCK_INIT
+	string
+	default "soc/rockchip/rk3288/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code.
+	 
+endif

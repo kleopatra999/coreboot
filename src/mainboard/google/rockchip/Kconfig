@@ -1,0 +1,128 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2014 Google Inc.
+##
+## This software is licensed under the terms of the GNU General Public
+## License version 2, as published by the Free Software Foundation, and
+## may be copied, distributed, and modified under those terms.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+# Emulation for ARM Ltd Versatile Express Cortex-A9
+#  http://www.arm.com/products/tools/development-boards/versatile-express
+
+# To execute, do:
+# export QEMU_AUDIO_DRV=none
+# qemu-system-arm -M vexpress-a9 -m 1024M -nographic -kernel build/coreboot.rom
+
+if BOARD_GOOGLE_ROCKCHIP
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARM
+	select CPU_ROCKCHIP_RK3288
+	select HAVE_UART_MEMORY_MAPPED
+	select HAVE_UART_SPECIAL
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
+	select CONSOLE_SERIAL
+	select ARM_BOOTBLOCK_ARMV7
+	select ARM_ROMSTAGE_ARMV7
+	select ARM_RAMSTAGE_ARMV7
+	select BOARD_ROMSIZE_KB_256
+
+config MAINBOARD_DIR
+	string
+	default google/rockchip
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU ARMv7"
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_VENDOR
+	string
+	default "ARM Ltd."
+
+config SYS_SDRAM_BASE
+	hex "SDRAM base address"
+	default 0x00000000
+
+config DRAM_SIZE_MB
+	int
+	default 2048
+
+# Memory map for qemu vexpress-a9:
+#
+# 0x0000_0000: jump instruction (by qemu)
+# 0x0001_0000: bootblock (entry of kernel / firmware)
+# 0x0002_0000: romstage, assume up to 128KB in size.
+# 0x0007_ff00: stack pointer
+# 0x0010_0000: CBFS header
+# 0x0011_0000: CBFS data
+# 0x0100_0000: reserved for ramstage
+# 0x1000_0000: I/O map address
+#
+config STACK_TOP
+	hex "STACK TOP"
+	default 0xff704000
+
+config STACK_BOTTOM
+    hex "STACK BOTTOM"
+	default 0xff700100
+	
+config ROMSTAGE_STACK_TOP
+	hex "ROMS TAGE STACK TOP"
+	default 0xff708000
+
+config ROMSTAGE_STACK_BOTTOM
+	hex "ROM STAGE STACK BOTTOM"
+	default 0xff700100
+	
+config BOOTBLOCK_BASE
+	hex
+	default 0xff704004
+
+config ROMSTAGE_BASE
+	hex "ROM STAGE BASE"
+	default 0xff708000
+
+config RAMSTAGE_BASE
+	hex "RAMSTAGE BASE"
+	default SYS_SDRAM_BASE
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex
+	default 0x0008000
+
+config CBFS_ROM_OFFSET
+	hex
+	default 0x0018000
+	
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0xff710000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00008000
+	
+config CBFS_RAMSTAGE_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x01100000
+
+config CBFS_RAMSTAGE_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00100000
+endif #  BOARD_GOOGLE_ROCKCHIP

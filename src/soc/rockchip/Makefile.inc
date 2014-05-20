@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_CPU_ROCKCHIP_RK3288) += rk3288
