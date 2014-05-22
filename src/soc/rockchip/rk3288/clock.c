@@ -55,7 +55,7 @@ static void clk_loop_delayus(uint32_t us)
 
 	/* copro seems to need some delay between reading and writing */
 	for (i = 0; i < LPJ_1000MHZ * us; i++)
-		inop();
+		nop();
 }
 
 
@@ -416,8 +416,7 @@ struct pll_clk_set {
 	.rst_dly		= ((nr*500)/24+1), \
 }
 
-#define _GPLL_SET_CLKS \
-	(khz, nr, nf, no, _axi_div, _ahb_div, _apb_div) \
+#define _GPLL_SET_CLKS(khz, nr, nf, no, _axi_div, _ahb_div, _apb_div) \
 { \
 	.rate		= khz * KHZ, \
 	.pllcon0	= PLL_CLKR_SET(nr) | PLL_CLKOD_SET(no), \
@@ -429,8 +428,7 @@ struct pll_clk_set {
 	.rst_dly	= ((nr*500)/24+1), \
 }
 
-#define _DPLL_SET_CLKS \
-	(khz, nr, nf, no, _ddr_div) \
+#define _DPLL_SET_CLKS(khz, nr, nf, no, _ddr_div) \
 { \
 	.rate		= khz * KHZ, \
 	.pllcon0	= PLL_CLKR_SET(nr) | PLL_CLKOD_SET(no), \
@@ -441,8 +439,7 @@ struct pll_clk_set {
 }
 
 
-#define _CPLL_SET_CLKS \
-	(khz, nr, nf, no) \
+#define _CPLL_SET_CLKS(khz, nr, nf, no) \
 { \
 	.rate		= khz * KHZ, \
 	.pllcon0	= PLL_CLKR_SET(nr) | PLL_CLKOD_SET(no), \
@@ -872,7 +869,5 @@ void rkclk_set_ddr_freq(unsigned int MHz)
 
 	/* PLL enter normal-mode */
 	cru_writel(PLL_MODE_NORM(pll_id), CRU_MODE_CON);
-
-	return 0;
 }
 
