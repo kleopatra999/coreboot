@@ -18,7 +18,6 @@
 #include "soc/rockchip/rk3288/spi.h"
 
 
-//#include "mmc.c"
 /* Simple memory-mapped ROM emulation. */
 
 static int emu_rom_open(struct cbfs_media *media)
@@ -28,7 +27,7 @@ static int emu_rom_open(struct cbfs_media *media)
 
 static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count)
 {
-        return (void*)(offset + CONFIG_BOOTBLOCK_BASE);
+	return (void *)(offset + CONFIG_BOOTBLOCK_BASE);
 }
 
 static void *emu_rom_unmap(struct cbfs_media *media, const void *address)
@@ -50,8 +49,6 @@ static int emu_rom_close(struct cbfs_media *media)
 	return 0;
 }
 
-int init_emu_rom_cbfs_media(struct cbfs_media *media);
-
 int init_emu_rom_cbfs_media(struct cbfs_media *media)
 {
 	media->open = emu_rom_open;
@@ -64,6 +61,6 @@ int init_emu_rom_cbfs_media(struct cbfs_media *media)
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-	//return init_emu_rom_cbfs_media(media);
-	return initialize_rockchip_spi_cbfs_media(media,(void*)CONFIG_CBFS_CACHE_ADDRESS,CONFIG_CBFS_CACHE_SIZE);
+	return initialize_rockchip_spi_cbfs_media(media,
+		(void *)CONFIG_CBFS_CACHE_ADDRESS, CONFIG_CBFS_CACHE_SIZE);
 }

@@ -21,9 +21,8 @@
 
 static void mainboard_init(device_t dev)
 {
-  int i;
-
-	for(i = 0; i < 6; i++)
+	int i;
+	for (i = 0; i < 6; i++)
 		i2c_init(i);
 }
 
