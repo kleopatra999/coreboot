@@ -14,10 +14,9 @@ Notes :
 #ifndef _RK30_MEMMAP_H
 #define _RK30_MEMMAP_H
 
-//#define     L2MEM_BASE              0xff700000 // just add temporary , not sure true
 #define BOOT_ROM_ADDR           0xffff0000
 #define BOOT_ROM_CHIP_VER_ADDR  (BOOT_ROM_ADDR+0x27F0)
-#define VOP_BIG_BASE_ADDR  	    0xff930000
+#define VOP_BIG_BASE_ADDR	0xff930000
 #define HDMI_TX_BASE            0xff980000
 #define UART0_BASE_ADDR		0xFF180000
 #define UART1_BASE_ADDR		0xFF190000
@@ -36,7 +35,7 @@ Notes :
 #define EMMC_BASE_ADDR          0xff0f0000
 #define NANDC0_BASE_ADDR        0xff400000
 #define NANDC1_BASE_ADDR        0xff410000
-#define NANDC_BASE_ADDR        	NANDC0_BASE_ADDR
+#define NANDC_BASE_ADDR	NANDC0_BASE_ADDR
 #define CRU_BASE_ADDR		0xFF760000
 #define GRF_BASE                0xff770000
 #define GRF_SECURE_BASE         0xff740000
@@ -54,7 +53,7 @@ Notes :
 #define TIMER6_BASE_ADDR        0xFF810000
 #define TIMER7_BASE_ADDR        0xFF810020
 
-#define eFUSE_BASE_ADDR         0xFFB40000
+#define eFUSE_BASE_ADDR	0xFFB40000
 #define RK_PWM0123_BASE_ADDR    0xFF680000
 #define DW_PWM0123_BASE_ADDR    0xFF670000
 #define PWM_BASE_ADDR           RK_PWM0123_BASE_ADDR
@@ -70,7 +69,7 @@ Notes :
 #define I2C5_BASE_ADDR					0xff170000
 
 #define REG_FILE_BASE_ADDR	0xFF770000
-#define VOP_BIG_BASE_ADDR   	0xff930000
+#define VOP_BIG_BASE_ADDR	0xff930000
 #define DMACS_BUS_BASE_ADDR     0xffb20000
 #define DMAC_BUS_BASE_ADDR      0xff600000
 #define DMAC_PERI_BASE_ADDR     0xff250000
@@ -89,14 +88,14 @@ Notes :
 
 #define SRAM_ADDR              0xff700000
 
-#define     Service_HEVC            0xffaf0000
-#define     Service_VPU             0xffae0000
-#define     Service_VIO             0xffad0000
-#define     Service_BUS             0xffac0000
-#define     Service_PERI            0xffab0000
-#define     Service_GPU             0xffaa0000
-#define     Service_DMA             0xffa90000
-#define     Service_Core            0xffa80000
+#define     Service_HEVC	0xffaf0000
+#define     Service_VPU           0xffae0000
+#define     Service_VIO		0xffad0000
+#define     Service_BUS		0xffac0000
+#define     Service_PERI		0xffab0000
+#define     Service_GPU		0xffaa0000
+#define     Service_DMA		0xffa90000
+#define     Service_Core		0xffa80000
 
 
 #endif	/* _EXYNOS5250_CPU_H */

@@ -18,17 +18,12 @@
 #include <timer.h>
 #include <delay.h>
 #include <stdint.h>
-
-
 #define CONFIG_SYS_CLK_FREQ		24000000
 #define TIMER_LOAD_VAL	0xffffffff
 #define TIMER_FREQ	CONFIG_SYS_CLK_FREQ
 #define CONFIG_SYS_HZ			1000
-
 extern uint32_t  div64_32(uint64_t *n, uint32_t base);
 extern inline unsigned long long tick_to_time(unsigned long long tick);
-//static inline unsigned long get_rk_current_tick();
-
 extern void __udelay(unsigned long usec);
 uint32_t  div64_32(uint64_t *n, uint32_t base)
 {
@@ -67,7 +62,7 @@ uint32_t  div64_32(uint64_t *n, uint32_t base)
 /* The unnecessary pointer compare is there
  * to check for type safety (n must be 64bit)
  */
-# define do_div(n,base) ({				\
+# define do_div(n, base) ({				\
 	uint32_t __base = (base);			\
 	uint32_t __rem;					\
 	(void)(((typeof((n)) *)0) == ((uint64_t *)0));	\
@@ -101,29 +96,23 @@ void __udelay(unsigned long usec)
 {
     long long tmo;
     long long now, last;
-
     tmo = usec_to_tick(usec);
-
     /* get current timestamp */
     last = get_rk_current_tick();
-    while (tmo > 0)	/* loop till event */
-    {
-        now = get_rk_current_tick();
-        if (last >= now) {
-            tmo -= last - now;
-        } else {
-            tmo -= 0xFFFFFFFF + last - now;
-        }
-        last = now;
+   /* loop till event */
+    while (tmo > 0) {
+	now = get_rk_current_tick();
+	if (last >= now)
+		tmo -= last - now;
+	else
+		tmo -= 0xFFFFFFFF + last - now;
+	last = now;
     }
 }
-
-
 void udelay(unsigned int n) {
 	/* TODO provide delay here. */
 	__udelay(n);
 }
-
 void init_timer(void) {
 	g_Time7Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
 	g_Time7Reg->TIMER_CTRL_REG = 0x01;
