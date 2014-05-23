@@ -24,25 +24,25 @@ typedef union NOC_ACTIVATE_Tag {
 	} b;
 } NOC_ACTIVATE_T;
 
-typedef struct MSCH_REG_Tag {
-	unsigned int coreid;
-	unsigned int revisionid;
-	unsigned int ddrconf;
-	NOC_TIMING_T ddrtiming;
-	unsigned int ddrmode;
-	unsigned int readlatency;
-	int reserved1[(0x38-0x18)/4];
-	NOC_ACTIVATE_T activate;
-	unsigned int devtodev;
+typedef volatile struct MSCH_REG_Tag {
+	volatile unsigned int coreid;
+	volatile unsigned int revisionid;
+	volatile unsigned int ddrconf;
+	volatile NOC_TIMING_T ddrtiming;
+	volatile unsigned int ddrmode;
+	volatile unsigned int readlatency;
+	unsigned int reserved1[(0x38-0x18)/4];
+	volatile NOC_ACTIVATE_T activate;
+	volatile unsigned int devtodev;
 } MSCH_REG, *pMSCH_REG;
 
-typedef struct QOS_REG_Tag {
-	int reserved1[2];
-	unsigned int priority;
-	unsigned int mode;
-	unsigned int bandwidth;
-	unsigned int saturation;
-	unsigned int extcontrol;
+typedef volatile struct QOS_REG_Tag {
+	unsigned int reserved1[2];
+	volatile unsigned int priority;
+	volatile unsigned int mode;
+	volatile unsigned int bandwidth;
+	volatile unsigned int saturation;
+	volatile unsigned int extcontrol;
 } QOS_REG, *pQOS_REG;
 
 /* use this row/bank/column information to find register value index  */

@@ -3,7 +3,7 @@
 
 #include <arch/io.h>
 
-typedef struct tagPMU_FILE {
+typedef volatile struct tagPMU_FILE {
 	unsigned int PMU_WAKEUP_CFG[2];
 	unsigned int PMU_PWRDN_CON;
 	unsigned int PMU_PWRDN_ST;

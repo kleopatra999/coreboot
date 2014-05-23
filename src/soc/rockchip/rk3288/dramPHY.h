@@ -135,54 +135,54 @@ typedef union DCR_Tag {
 } DCR_T;
 
 
-typedef struct DATX8_REG_Tag {
+typedef volatile struct DATX8_REG_Tag {
 	/* DATX8 General Configuration Register */
-	unsigned int DXGCR;
+	volatile unsigned int DXGCR;
 	/* DATX8 General Status Register */
-	unsigned int DXGSR[2];
+	volatile unsigned int DXGSR[2];
 	/* DATX8 DLL Control Register */
-	unsigned int DXDLLCR;
+	volatile unsigned int DXDLLCR;
 	/* DATX8 DQ Timing Register */
-	unsigned int DXDQTR;
+	volatile unsigned int DXDQTR;
 	/* DATX8 DQS Timing Register */
-	unsigned int DXDQSTR;
+	volatile unsigned int DXDQSTR;
 	unsigned int reserved[0x80-0x76];
 } DATX8_REG_T;
 
 /* DDR PHY register struct */
-typedef struct DDRPHY_REG_Tag {
+typedef volatile struct DDRPHY_REG_Tag {
 	/* Revision Identification Register */
-	unsigned int RIDR;
+	volatile unsigned int RIDR;
 	/* PHY Initialization Register */
-	unsigned int PIR;
+	volatile unsigned int PIR;
 	/* PHY General Configuration Register */
-	unsigned int PGCR;
+	volatile unsigned int PGCR;
 	/* PHY General Status Register */
-	unsigned int PGSR;
+	volatile unsigned int PGSR;
 	/* DLL General Control Register */
-	unsigned int DLLGCR;
+	volatile unsigned int DLLGCR;
 	/* AC DLL Control Register */
-	unsigned int ACDLLCR;
+	volatile unsigned int ACDLLCR;
 	/* PHY Timing Registers 0-2 */
-	unsigned int PTR[3];
+	volatile unsigned int PTR[3];
 	/* AC I/O Configuration Register */
-	unsigned int ACIOCR;
+	volatile unsigned int ACIOCR;
 	/* DATX8 Common Configuration Register */
-	unsigned int DXCCR;
+	volatile unsigned int DXCCR;
 	/* DDR System General Configuration Register */
-	unsigned int DSGCR;
+	volatile unsigned int DSGCR;
 	/* DRAM Configuration Register */
 	DCR_T DCR;
 	/* DRAM Timing Parameters Register 0-2 */
-	unsigned int DTPR[3];
+	volatile unsigned int DTPR[3];
 	/* Mode Register 0-3 */
-	unsigned int MR[4];
+	volatile unsigned int MR[4];
 	/* ODT Configuration Register */
-	unsigned int ODTCR;
+	volatile unsigned int ODTCR;
 	/* Data Training Address Register */
-	unsigned int DTAR;
+	volatile unsigned int DTAR;
 	/* Data Training Data Register 0-1 */
-	unsigned int DTDR[2];
+	volatile unsigned int DTDR[2];
 
 	unsigned int reserved1[0x30-0x18];
 	/* DCU Address Register */
@@ -204,21 +204,21 @@ typedef struct DDRPHY_REG_Tag {
 	unsigned int reserved3[0x60-0x51];
 
 	/* ZQ 0 Impedance Control Register 0-1 */
-	unsigned int ZQ0CR[2];
+	volatile unsigned int ZQ0CR[2];
 	/* ZQ 0 Impedance Status Register 0-1 */
-	unsigned int ZQ0SR[2];
+	volatile unsigned int ZQ0SR[2];
 	/* ZQ 1 Impedance Control Register 0-1 */
-	unsigned int ZQ1CR[2];
+	volatile unsigned int ZQ1CR[2];
 	/* ZQ 1 Impedance Status Register 0-1 */
-	unsigned int ZQ1SR[2];
+	volatile unsigned int ZQ1SR[2];
 	/* ZQ 2 Impedance Control Register 0-1 */
-	unsigned int ZQ2CR[2];
+	volatile unsigned int ZQ2CR[2];
 	/* ZQ 2 Impedance Status Register 0-1 */
-	unsigned int ZQ2SR[2];
+	volatile unsigned int ZQ2SR[2];
 	/* ZQ 3 Impedance Control Register 0-1 */
-	unsigned int ZQ3CR[2];
+	volatile unsigned int ZQ3CR[2];
 	/* ZQ 3 Impedance Status Register 0-1 */
-	unsigned int ZQ3SR[2];
+	volatile unsigned int ZQ3SR[2];
 	/* DATX8 Register */
 	DATX8_REG_T     DATX8[9];
 } DDRPHY_REG_T, *pDDRPHY_REG_T;
