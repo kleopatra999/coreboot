@@ -16,6 +16,7 @@
 #include <string.h>
 #include <console/console.h>
 #include "soc/rockchip/rk3288/spi.h"
+#include "media_ramstage.h"
 
 /* Simple memory-mapped ROM emulation. */
 

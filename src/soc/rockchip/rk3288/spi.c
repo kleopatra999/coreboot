@@ -246,7 +246,7 @@ static int rockchip_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 
 void spi_release_bus(struct spi_slave *slave)
 {
-	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
+
 }
 
 struct rockchip_spi_media {

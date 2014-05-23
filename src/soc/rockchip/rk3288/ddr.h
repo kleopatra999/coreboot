@@ -122,4 +122,5 @@
  * Note       : we use max speed bin, and max die capability to calculate tRFC
  */
 int ddr_param_init(unsigned int freq);
+int ddr_timing_init(unsigned int freq);
 #endif

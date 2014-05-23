@@ -23,6 +23,8 @@
 #include <arch/exception.h>
 #include <soc/rockchip/rk3288/clock.h>
 #include <soc/rockchip/rk3288/timer.h>
+#include <soc/rockchip/rk3288/dramMain.h>
+#include "romstage.h"
 
 void romstage_init(void)
 {

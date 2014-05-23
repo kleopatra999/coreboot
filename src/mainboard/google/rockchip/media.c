@@ -15,6 +15,7 @@
 #include <cbfs.h>
 #include <string.h>
 #include <console/console.h>
+#include "media.h"
 #include "soc/rockchip/rk3288/spi.h"
 
 

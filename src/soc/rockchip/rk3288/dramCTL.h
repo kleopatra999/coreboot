@@ -388,4 +388,15 @@ typedef struct DDR_REG_Tag {
 	/* IP Type Register */
 	unsigned int IPTR;
 } DDR_REG_T, *pDDR_REG_T;
+
+void move_to_Access_state(void);
+void move_to_Config_state(void);
+void memory_init(void);
+void phy_init(void);
+void phy_pctrl_reset(void);
+void phy_dll_bypass_set(unsigned int freq);
+void send_command(unsigned int rank, unsigned int cmd, unsigned int arg);
+void ddr_copy(unsigned int *pDest, unsigned int *pSrc, unsigned int words);
+void set_bw(unsigned int n);
+
 #endif

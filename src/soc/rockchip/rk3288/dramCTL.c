@@ -296,10 +296,8 @@ static unsigned int _data_training(void)
 
 static void phy_cfg(void)
 {
-	unsigned int i;
 	unsigned int odt;
 	unsigned int dramType = pChInfo->dramType;
-	pDDR_REG_T    pDDR_Reg = pChInfo->pDDR_Reg;
 	pDDRPHY_REG_T pPHY_Reg = pChInfo->pPHY_Reg;
 	pMSCH_REG     pMSCH_Reg = pChInfo->pMSCH_Reg;
 
@@ -482,7 +480,6 @@ unsigned int dram_cfg_rbc(unsigned int cs, unsigned int cs0_row,
 	unsigned int cs1_row, unsigned int bank, unsigned int col,
 	unsigned int bw)
 {
-	unsigned int  dramType = pChInfo->dramType;
 	pDDRPHY_REG_T pPHY_Reg = pChInfo->pPHY_Reg;
 	pMSCH_REG     pMSCH_Reg = pChInfo->pMSCH_Reg;
 	unsigned int i;
@@ -504,7 +501,6 @@ unsigned int dram_cfg_rbc(unsigned int cs, unsigned int cs0_row,
 		goto end;
 	}
 
-finish:
 	pMSCH_Reg->ddrconf = i;
 end:
 	move_to_Access_state();
@@ -535,10 +531,8 @@ unsigned int dram_is_SelfRefresh(void)
  */
 unsigned int dram_init(unsigned int freq)
 {
-	unsigned int  dramType = pChInfo->dramType;
 	pDDR_REG_T    pDDR_Reg = pChInfo->pDDR_Reg;
 	pDDRPHY_REG_T pPHY_Reg = pChInfo->pPHY_Reg;
-	unsigned int i;
 	unsigned int ret = 0;
 
 	phy_pctrl_reset();
@@ -555,7 +549,6 @@ unsigned int dram_init(unsigned int freq)
 	send_command(3, Deselect_cmd, 0);
 	udelay(1);
 	send_command(3, PREA_cmd, 0);
-retry:
 	memory_init();
 	move_to_Config_state();
 	set_bw(pChInfo->bw);

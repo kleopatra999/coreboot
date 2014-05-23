@@ -10,6 +10,8 @@
 #include "dramCTL.h"
 #include "dramPHY.h"
 #include "api_dramCTL.h"
+#include "clock.h"
+#include "dramMain.h"
 
 /*
  * Description: calculate each channel's capability
@@ -179,8 +181,9 @@ static unsigned int test(void)
 				capTmp = capTmp>>1;
 				if (!(capTmp & 0x3))
 					writel((baseAddr+capTmp
-						+(i ? cs_cap[0] : 0)), (baseAddr
-						+capTmp+(i ? cs_cap[0] : 0)));
+						+(i ? cs_cap[0] : 0)),
+						(void *)(baseAddr+capTmp
+						+(i ? cs_cap[0] : 0)));
 			} while (capTmp);
 
 			capTmp = cs_cap[i];
@@ -189,7 +192,7 @@ static unsigned int test(void)
 				if (!(capTmp & 0x3)) {
 					addr = (baseAddr+capTmp
 						+(i ? cs_cap[0] : 0));
-					value = readl(addr);
+					value = readl((const void *)addr);
 					if (value != addr) {
 						ret = -1;
 						goto end;
@@ -261,7 +264,6 @@ unsigned int dram_main(void)
 			goto error;
 	}
 
-end:
 	printk(BIOS_DEBUG, "OUT\n");
 	return 0;
 
