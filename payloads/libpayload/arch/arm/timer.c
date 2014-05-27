@@ -34,30 +34,20 @@ typedef volatile struct tagTIMER_STRUCT
 	u32 TIMER_CTRL_REG;
 	u32 TIMER_INT_STATUS;
 }TIMER_REG,*pTIMER_REG;
-
-#define TIMER_LOAD_VAL	0xffffffff
-
 uint64_t timer_hz(void)
 {
-	return 24000000;//CONFIG_DRIVER_TIMER_ROCKCHIP_HZ;
+	return 24000000;
 }
 
 uint64_t timer_raw_value(void)
 {
-	static int enabled = 0;
 	uint64_t value0;
 	uint64_t value1;
 	pTIMER_REG g_Time7Reg = ((pTIMER_REG)0xFF810020);
-	if (!enabled) {
-		g_Time7Reg->TIMER_LOAD_COUNT0 = TIMER_LOAD_VAL;
-		g_Time7Reg->TIMER_LOAD_COUNT1 = TIMER_LOAD_VAL;
-		g_Time7Reg->TIMER_CTRL_REG = 0x01;
-		enabled = 1;
-	}
-	value0 =(uint64_t)g_Time7Reg->TIMER_CURR_VALUE0;// (uint64_t)g_Time7Reg->TIMER_CURR_VALUE1<<32;
+	value0 =(uint64_t)g_Time7Reg->TIMER_CURR_VALUE0;
 	value1 = (uint64_t)g_Time7Reg->TIMER_CURR_VALUE1;
 	value0 = value0 | value1<<32;
-	return (uint64_t)g_Time7Reg->TIMER_CURR_VALUE0;// value0;
+	return value0;
 }
 
 
