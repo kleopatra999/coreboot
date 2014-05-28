@@ -7,6 +7,7 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 bootblock-y += timer.c
 bootblock-y += monotonic_timer.c
 bootblock-y += pinmux.c
+bootblock-y += clock.c
 bootblock-y += spi.c
 
 romstage-y += cbmem.c
@@ -33,6 +34,7 @@ ramstage-y += timer.c
 ramstage-y += monotonic_timer.c
 ramstage-y += i2c.c
 ramstage-y += pinmux.c
+ramstage-y += clock.c
 ramstage-y += spi.c
 ramstage-y += ddr.c
 ramstage-y += dramMain.c

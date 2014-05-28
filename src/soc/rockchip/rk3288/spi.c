@@ -7,6 +7,7 @@
 #include "memap.h"
 #include "spi.h"
 #include "reg.h"
+#include "clock.h"
 
 struct rockchip_spi_slave {
 	struct spi_slave slave;
@@ -45,7 +46,7 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		.mode = 0,
 		.bits_per_word = 8,
 		.tmode = SPI_TMOD_TR,
-		.speed_hz = 5000000,
+		.speed_hz = 12000000,
 		.fifo_size = 64,
 		.half_duplex = 1,
 		.frame_header = 0xec,
@@ -110,6 +111,8 @@ int spi_claim_bus(struct spi_slave *slave)
 	unsigned int ctrlr0 = 0;
 	unsigned short clk_div = 0;
 	unsigned char spi_dfs = 0, spi_tf = 0;
+	unsigned int src_clk;
+	unsigned int src_clk_div;
 	g_cruReg->CRU_CLKSEL_CON[39] = 0x00970097;
 	rockchip_spi_enable_chip(regs, 0);
 
@@ -129,10 +132,11 @@ int spi_claim_bus(struct spi_slave *slave)
 			espi->bits_per_word);
 	}
 	/* Calculate clock divisor.  */
-	clk_div = (200*1000*1000 / 2 / 4) / espi->speed_hz;
+	src_clk_div = ((g_cruReg->CRU_CLKSEL_CON[39]&0x7f));
+	src_clk = rk_get_general_pll()/(src_clk_div + 1);
+	clk_div = src_clk / espi->speed_hz;
 	clk_div = (clk_div + 1) & 0xfffe;
 	rockchip_spi_set_clk(regs, clk_div);
-
 	/* Operation Mode */
 	ctrlr0 = (SPI_OMOD_MASTER << SPI_OMOD_OFFSET);
 

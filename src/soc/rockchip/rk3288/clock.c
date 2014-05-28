@@ -30,7 +30,7 @@
 #include "memap.h"
 #include <delay.h>
 
-#define CONFIG_RKCLK_APLL_FREQ		1008 /* MHZ */
+#define CONFIG_RKCLK_APLL_FREQ		816 /* MHZ */
 #define CONFIG_RKCLK_GPLL_FREQ		594 /* MHZ */
 #define CONFIG_RKCLK_CPLL_FREQ		594 /* MHZ */
 
