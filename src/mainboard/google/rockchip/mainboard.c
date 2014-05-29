@@ -17,13 +17,27 @@
 #include <device/device.h>
 #include <soc/rockchip/rk3288/i2c.h>
 
-
+#define GPIO_BEGUG 0
+#define GPIO_WP			GPIO_BEGUG
+#define GPIO_DEV  		GPIO_BEGUG
+#define GPIO_PWR  		GPIO_BEGUG
+#define GPIO_RECOVERY 	GPIO_BEGUG
+#define GPIO_LIB			GPIO_BEGUG
+static void setup_gpio(void)
+{
+	gpio_direction_input(GPIO_WP);
+	gpio_direction_input(GPIO_DEV);
+	gpio_direction_input(GPIO_PWR);
+	gpio_direction_input(GPIO_RECOVERY);
+	gpio_direction_input(GPIO_LIB);
+}
 
 static void mainboard_init(device_t dev)
 {
 	int i;
 	for (i = 0; i < 6; i++)
 		i2c_init(i);
+	setup_gpio();
 }
 
 static void mainboard_enable(device_t dev)

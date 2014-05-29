@@ -40,6 +40,7 @@ ramstage-y += ddr.c
 ramstage-y += dramMain.c
 ramstage-y += dramCTL.c
 ramstage-y += noc.c
+ramstage-y += gpio.c
 
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@

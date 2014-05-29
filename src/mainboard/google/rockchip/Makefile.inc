@@ -19,5 +19,6 @@ bootblock-y += media.c
 romstage-y += media.c
 ramstage-y += media_ramstage.c
 ramstage-y += mainboard.c
+ramstage-y += chromeos.c
 
 
